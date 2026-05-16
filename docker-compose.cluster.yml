@@ -1,0 +1,45 @@
+# Two cache nodes on one Docker network + router in **replicate** mode (full distributed replica set).
+# From the flashcache directory:
+#   docker compose -f docker-compose.cluster.yml up -d --build
+#
+# Clients connect to the router on localhost:7653. Every SET/DEL/INCR is applied to both nodes; GET/EXISTS fail over.
+
+services:
+  flashcache-a:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: flashcache-a
+    environment:
+      FLASHCACHE_PORT: "7654"
+      FLASHCACHE_METRICS_PORT: "7656"
+    ports:
+      - "7654:7654"
+      - "7656:7656"
+
+  flashcache-b:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: flashcache-b
+    environment:
+      FLASHCACHE_PORT: "7654"
+      FLASHCACHE_METRICS_PORT: "7657"
+    ports:
+      - "7655:7654"
+      - "7657:7657"
+
+  flashcache-router:
+    build:
+      context: .
+      dockerfile: router/Dockerfile
+    container_name: flashcache-router
+    ports:
+      - "7653:7653"
+    environment:
+      FLASHCACHE_ROUTER_PORT: "7653"
+      FLASHCACHE_ROUTER_MODE: "replicate"
+      FLASHCACHE_PEERS: "flashcache-a:7654,flashcache-b:7654"
+    depends_on:
+      - flashcache-a
+      - flashcache-b
