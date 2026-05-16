@@ -36,7 +36,6 @@ Example `SET` then `GET`:
 
 ```json
 {"op":"SET","key":"user:1","value":"hello","ttlMs":60000}
-{"op":"GET","key":"user:1"}
 ```
 
 Example `INCR`:
@@ -110,6 +109,3 @@ Clients connect to **localhost:7653** (router). The sample compose uses **replic
 
 Coordinates: `com.flashcache:sdk:0.1.0` (use Gradle `includeBuild` as PulseFlow does, or publish to your repository).
 
-## Product requirements
-
-See [docs/PRD.md](docs/PRD.md).
